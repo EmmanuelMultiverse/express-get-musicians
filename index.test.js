@@ -29,12 +29,28 @@ describe('./musicians endpoint', () => {
             instrument: 'Guitar'
             }
         ])
+    })   
+})
+
+describe("/bands endpoint", () => {
+    test("Verify GET /bands", async () => {
+        const res = await request(app).get("/bands");
+        const resJSON = JSON.parse(res.text);
+
+        expect(res.statusCode).toBe(200);
+        expect(resJSON).toMatchObject([
+            {
+                name: 'The Beatles',
+                genre: 'Rock'
+            },
+            {
+                name: 'Black Pink',
+                genre: 'Pop',
+            },
+            {
+                name: 'Coldplay',
+                genre: 'Rock'
+            }
+        ])
     })
-    
-    
-
-
-
-
-    
 })
