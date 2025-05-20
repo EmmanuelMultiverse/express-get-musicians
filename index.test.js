@@ -40,6 +40,44 @@ describe('./musicians endpoint', () => {
             instrument: 'Voice'
         })
     })
+
+    test("Verify POST /musicians", async () => {
+        const musician = {
+            name: "FR",
+            instrument: "Voice",
+
+        }
+        const res = await request(app).post("/musicians").send(musician);
+
+        expect(res.statusCode).toBe(200);
+        expect(res.body).toMatchObject(musician);
+    })
+
+    test("Verify PUT /musicians/:id", async () => {
+        const musician = {
+            name: "TDP",
+            instrument: "Voice",
+
+        }
+        const res = await request(app).put("/musicians/2").send(musician);
+
+        expect(res.statusCode).toBe(200);
+        expect(res.body).toMatchObject(musician);
+    })
+
+    test("Verify Delete /musicians/:id", async () => {
+
+        const musician = {
+            name: "TDP",
+            instrument: "Voice",
+
+        }
+        
+        const res = await request(app).delete("/musicians/2");
+
+        expect(res.statusCode).toBe(200);
+        expect(res.body).toMatchObject(musician);
+    })
 })
 
 describe("/bands endpoint", () => {
