@@ -12,6 +12,20 @@ app.get("/musicians", async (req, res) => {
     res.json(musicians);
 })
 
+app.get("/musicians/:id", async (req, res, next) => {
+    try {
+        const foundMusician = await Musician.findByPk(req.params.id);
+
+        if (foundMusician) {
+            res.status(200).json(foundMusician);
+        } else {
+            res.status(400).send("Could not find Musician");
+        }
+    } catch (err) {
+        next(err);
+    }
+})
+
 app.get("/musicians/1", async (req, res) => {
     const musicianOne = await Musician.findByPk(1);
     res.json(musicianOne);

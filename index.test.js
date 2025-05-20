@@ -12,10 +12,9 @@ const request = require("supertest");
 describe('./musicians endpoint', () => {
     test("Verify GET /musicians", async () => {
         const response = await request(app).get("/musicians");
-        const responseJson = JSON.parse(response.text);
-
+    
         expect(response.statusCode).toBe(200);
-        expect(responseJson).toMatchObject([
+        expect(response.body).toMatchObject([
             {
             name: 'Mick Jagger',
             instrument: 'Voice'
@@ -29,16 +28,27 @@ describe('./musicians endpoint', () => {
             instrument: 'Guitar'
             }
         ])
-    })   
+    })
+    
+    test("Verify GET /musicians/:id", async () => {
+        const res = await request(app).get("/musicians/1");
+        const resJson = res.body;
+        
+        expect(res.statusCode).toBe(200);
+        expect(resJson).toMatchObject({
+            name: 'Mick Jagger',
+            instrument: 'Voice'
+        })
+    })
 })
 
 describe("/bands endpoint", () => {
     test("Verify GET /bands", async () => {
         const res = await request(app).get("/bands");
-        const resJSON = JSON.parse(res.text);
+        
 
         expect(res.statusCode).toBe(200);
-        expect(resJSON).toMatchObject([
+        expect(res.body).toMatchObject([
             {
                 name: 'The Beatles',
                 genre: 'Rock'
