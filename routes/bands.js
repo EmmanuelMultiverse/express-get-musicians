@@ -10,7 +10,6 @@ router.get("/", async (req, res, next) => {
         });
 
         if (bands) {
-            console.log(bands)
             res.status(200).json(bands);
         } else {
             res.status(400).send(`Could not find bands`);
@@ -32,7 +31,6 @@ router.get("/:id", async (req, res, next) => {
         );
 
         if (band) {
-            console.log(band)
             res.status(200).json(band);
         } else {
             res.status(400).send(`Could not find  ${req.params.id}`);

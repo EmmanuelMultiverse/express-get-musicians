@@ -4,14 +4,20 @@ const { seedMusician, seedBand } = require("./seedData");
 
 const syncSeed = async () => {
     await db.sync({force: true});
-    seedMusician.map(musician => Musician.create(musician));
-    seedBand.map(band => Band.create(band));
+    await Musician.bulkCreate(seedMusician);
+    await Band.bulkCreate(seedBand);
 
     const musicians = await Musician.findAll();
-    const bands = await Band.findAll();
+    let bands = await Band.findAll();
 
-    bands[0].addMusician(musicians[0]);
-    bands[0].addMusician(musicians[1]);
+    await bands[0].addMusician(musicians[0]);
+    await bands[0].addMusician(musicians[1]);
+
+    bands = await Band.findAll({
+        include: Musician,
+
+    });
+    console.log(bands[0].musicians);
 }
 
 syncSeed();

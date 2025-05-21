@@ -1,4 +1,3 @@
-// install dependencies
 const { execSync } = require('child_process');
 execSync('npm install');
 execSync('npm run seed');
@@ -59,7 +58,7 @@ describe('./musicians endpoint', () => {
             instrument: "Voice",
 
         }
-        const res = await request(app).put("/musicians/2").send(musician);
+        const res = await request(app).put("/musicians/3").send(musician);
 
         expect(res.statusCode).toBe(200);
         expect(res.body).toMatchObject(musician);
@@ -73,7 +72,7 @@ describe('./musicians endpoint', () => {
 
         }
         
-        const res = await request(app).delete("/musicians/2");
+        const res = await request(app).delete("/musicians/3");
 
         expect(res.statusCode).toBe(200);
         expect(res.body).toMatchObject(musician);
@@ -84,12 +83,31 @@ describe("/bands endpoint", () => {
     test("Verify GET /bands", async () => {
         const res = await request(app).get("/bands");
         
-
+        console.log(res.body[0].musicians);
         expect(res.statusCode).toBe(200);
         expect(res.body).toMatchObject([
             {
                 name: 'The Beatles',
-                genre: 'Rock'
+                genre: 'Rock',
+                musicians: [
+                    {
+                        id: 2,
+                        name: "Drake",
+                        instrument: "Voice",
+                        bandId: 1,
+                        createdAt: expect.any(String),
+                        updatedAt: expect.any(String),
+                        
+                    },                 
+                    {
+                        id: 1,
+                        name: "Mick Jagger",
+                        instrument: "Voice",
+                        bandId: 1,
+                        createdAt: expect.any(String),
+                        updatedAt: expect.any(String),
+                    },
+                ]
             },
             {
                 name: 'Black Pink',
