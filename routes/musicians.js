@@ -76,7 +76,7 @@ router.delete("/:id", async (req, res, next) => {
             console.log(deletedMusician);
             res.status(201).json(foundMusician);
         } else {
-            res.status(400).send(`Could not create musician.`);
+            res.status(400).send(`Could not delete musician.`);
         }
 
     } catch (err) {
