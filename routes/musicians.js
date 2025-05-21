@@ -17,3 +17,18 @@ router.get("/", async (req, res, next) => {
         next(err);
     }
 })
+
+router.get("/:id", async (req, res, next) => {
+    try {
+        const musician = await Musician.findByPk(req.params.id);
+
+        if (musician) {
+            res.status(200).json(musician);
+        } else {
+            res.status(400).send(`Could not get musician ${req.params.id}.`);
+        }
+
+    } catch (err) {
+        next(err);
+    }
+})
