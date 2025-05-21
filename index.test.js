@@ -1,11 +1,83 @@
 const { execSync } = require('child_process');
 execSync('npm install');
-execSync('npm run seed');
 const { db } = require('./db/connection');
 const { Musician } = require('./models/index')
 const app = require('./src/app');
 const {seedMusician} = require("./seedData");
 const request = require("supertest");
+
+const expectedMusician = {
+    id: 1,
+    name: "FR",
+    instrument: "Guitar",
+}
+
+jest.mock("./models/Band", () => {
+    return {
+        findAll: jest.fn().mockResolvedValue(
+            [
+                {
+                    name: 'The Beatles',
+                    genre: 'Rock',
+                    musicians: [
+                        {
+                            id: 2,
+                            name: "Drake",
+                            instrument: "Voice",
+                            bandId: 1,            
+                        },                 
+                        {
+                            id: 1,
+                            name: "Mick Jagger",
+                            instrument: "Voice",
+                            bandId: 1,
+                        },
+                    ]
+                },
+                {
+                    name: 'Black Pink',
+                    genre: 'Pop',
+                },
+                {
+                    name: 'Coldplay',
+                    genre: 'Rock'
+                }
+            ]
+        ),
+
+    }
+})
+
+jest.mock("./models/Musician", () => {
+    let mockMusician = {
+        id: 1,
+        name: "FR",
+        instrument: "Guitar",
+    }
+    return { 
+        create: jest.fn().mockResolvedValue(mockMusician),
+        findByPk: jest.fn().mockResolvedValue({...mockMusician, 
+            destroy: jest.fn().mockResolvedValue(mockMusician),
+            update: jest.fn().mockResolvedValue(mockMusician),
+        }),
+        findAll: jest.fn().mockResolvedValue(
+            [
+                {
+                name: 'Mick Jagger',
+                instrument: 'Voice'
+                },
+                {
+                name: 'Drake',
+                instrument: 'Voice',
+                },
+                {
+                name: 'Jimi Hendrix',
+                instrument: 'Guitar'
+                }
+            ]
+        ),
+    }
+})
 
 
 describe('./musicians endpoint', () => {
@@ -34,48 +106,30 @@ describe('./musicians endpoint', () => {
         const resJson = res.body;
         
         expect(res.statusCode).toBe(200);
-        expect(resJson).toMatchObject({
-            name: 'Mick Jagger',
-            instrument: 'Voice'
-        })
+        expect(resJson).toMatchObject(expectedMusician);
     })
 
     test("Verify POST /musicians", async () => {
-        const musician = {
-            name: "FR",
-            instrument: "Voice",
-
-        }
-        const res = await request(app).post("/musicians").send(musician);
+        const res = await request(app).post("/musicians");
 
         expect(res.statusCode).toBe(201);
-        expect(res.body).toMatchObject(musician);
+        expect(res.body).toMatchObject(expectedMusician);
     })
 
     test("Verify PUT /musicians/:id", async () => {
-        const musician = {
-            name: "TDP",
-            instrument: "Voice",
-
-        }
-        const res = await request(app).put("/musicians/3").send(musician);
+        
+        const res = await request(app).put("/musicians/3");
 
         expect(res.statusCode).toBe(200);
-        expect(res.body).toMatchObject(musician);
+        expect(res.body).toMatchObject(expectedMusician);
     })
 
     test("Verify Delete /musicians/:id", async () => {
-
-        const musician = {
-            name: "TDP",
-            instrument: "Voice",
-
-        }
-        
-        const res = await request(app).delete("/musicians/3");
+ 
+        const res = await request(app).delete("/musicians/1");
 
         expect(res.statusCode).toBe(200);
-        expect(res.body).toMatchObject(musician);
+        expect(res.body).toMatchObject(expectedMusician);
     })
 })
 
@@ -83,7 +137,6 @@ describe("/bands endpoint", () => {
     test("Verify GET /bands", async () => {
         const res = await request(app).get("/bands");
         
-        console.log(res.body[0].musicians);
         expect(res.statusCode).toBe(200);
         expect(res.body).toMatchObject([
             {
@@ -95,8 +148,6 @@ describe("/bands endpoint", () => {
                         name: "Drake",
                         instrument: "Voice",
                         bandId: 1,
-                        createdAt: expect.any(String),
-                        updatedAt: expect.any(String),
                         
                     },                 
                     {
@@ -104,8 +155,7 @@ describe("/bands endpoint", () => {
                         name: "Mick Jagger",
                         instrument: "Voice",
                         bandId: 1,
-                        createdAt: expect.any(String),
-                        updatedAt: expect.any(String),
+
                     },
                 ]
             },

@@ -10,14 +10,13 @@ const syncSeed = async () => {
     const musicians = await Musician.findAll();
     let bands = await Band.findAll();
 
-    await bands[0].addMusician(musicians[0]);
-    await bands[0].addMusician(musicians[1]);
+    // await bands[0].addMusician(musicians[0]);
+    // await bands[0].addMusician(musicians[1]);
 
     bands = await Band.findAll({
         include: Musician,
 
     });
-    console.log(bands[0].musicians);
 }
 
 syncSeed();
