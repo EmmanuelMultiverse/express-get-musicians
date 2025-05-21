@@ -65,3 +65,21 @@ router.put("/:id", async (req, res, next) => {
         next(err);
     }
 })
+
+router.delete("/:id", async (req, res, next) => {
+    try {
+        const foundMusician = await Musician.findByPk(req.params.id);
+
+        if (foundMusician) {
+            const deletedMusician = await foundMusician.destroy();
+            console.log(foundMusician);
+            console.log(deletedMusician);
+            res.status(201).json(foundMusician);
+        } else {
+            res.status(400).send(`Could not create musician.`);
+        }
+
+    } catch (err) {
+        next(err);
+    }
+})
