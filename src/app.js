@@ -10,4 +10,19 @@ app.use(express.urlencoded());
 
 app.use("/musicians", musiciansRouter);
 
+app.get("/bands", async (req, res, next) => {
+    try {
+        const bands = await Band.findAll();
+
+        if (bands) {
+            res.status(200).json(bands);
+        } else {
+            res.status(400).send(`Could not find bands`);
+        }
+    } catch (err) {
+        next(err);
+    }
+
+})
+
 module.exports = app;

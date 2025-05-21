@@ -49,7 +49,7 @@ describe('./musicians endpoint', () => {
         }
         const res = await request(app).post("/musicians").send(musician);
 
-        expect(res.statusCode).toBe(200);
+        expect(res.statusCode).toBe(201);
         expect(res.body).toMatchObject(musician);
     })
 
