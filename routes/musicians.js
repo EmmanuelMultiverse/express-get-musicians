@@ -32,3 +32,18 @@ router.get("/:id", async (req, res, next) => {
         next(err);
     }
 })
+
+router.post("/", async (req, res, next) => {
+    try {
+        const musician = await Musician.create(req.body);
+
+        if (musician) {
+            res.status(201).json(musician);
+        } else {
+            res.status(400).send(`Could not create musician.`);
+        }
+
+    } catch (err) {
+        next(err);
+    }
+})
