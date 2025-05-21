@@ -58,7 +58,7 @@ router.put("/:id", async (req, res, next) => {
             console.log(updatedMusician);
             res.status(201).json(foundMusician);
         } else {
-            res.status(400).send(`Could not create musician.`);
+            res.status(400).send(`Could not update musician.`);
         }
 
     } catch (err) {
