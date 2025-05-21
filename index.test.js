@@ -13,7 +13,26 @@ const expectedMusician = {
 }
 
 jest.mock("./models/Band", () => {
+    const mockedBandInstance = { 
+        id: 1,
+        name: "PP",
+        genre: "Mexico Regional",
+        addMusician: jest.fn().mockResolvedValue(true),
+        getMusicians: jest.fn().mockResolvedValue([
+            {
+                id: 1,
+                name: "FR",
+                instrument: "Guitar",
+            },
+            {
+                id: 1,
+                name: "FR",
+                instrument: "Guitar",
+            }
+        ])
+    }
     return {
+        create: jest.fn().mockResolvedValue(mockedBandInstance),
         findAll: jest.fn().mockResolvedValue(
             [
                 {
@@ -53,6 +72,11 @@ jest.mock("./models/Musician", () => {
         id: 1,
         name: "FR",
         instrument: "Guitar",
+        bandId: null,
+        setBand: jest.fn().mockImplementation(function(bandInstance) {
+            this.bandId = bandInstance.id;
+            return Promise.resolve(this);
+        })
     }
     return { 
         create: jest.fn().mockResolvedValue(mockMusician),
