@@ -54,9 +54,7 @@ router.put("/:id", async (req, res, next) => {
 
         if (foundMusician) {
             const updatedMusician = await foundMusician.update(req.body);
-            console.log(foundMusician);
-            console.log(updatedMusician);
-            res.status(200).json(foundMusician);
+            res.status(200).json(updatedMusician);
         } else {
             res.status(400).send(`Could not update musician.`);
         }
@@ -72,9 +70,7 @@ router.delete("/:id", async (req, res, next) => {
 
         if (foundMusician) {
             const deletedMusician = await foundMusician.destroy();
-            console.log(foundMusician);
-            console.log(deletedMusician);
-            res.status(200).json(foundMusician);
+            res.status(200).json(deletedMusician);
         } else {
             res.status(400).send(`Could not delete musician.`);
         }
