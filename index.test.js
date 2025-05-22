@@ -148,6 +148,28 @@ describe('./musicians endpoint', () => {
         expect(res.body).toMatchObject(expectedMusician);
     })
 
+    test("Verify POST /musicians returns error object with bad request - invalid length", async () => {
+
+        const badRequestinvalidLengthName = {
+            instrument: "Guitar",
+            name: "longNameeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+
+        }
+
+        const res = await request(app).post("/musicians").send(badRequestinvalidLengthName);
+
+        expect(res.statusCode).toBe(400);
+        expect(res.body).toMatchObject({"error": [
+            {
+               location: "body",
+               msg: "Invalid value",
+               path: "name",
+               type: "field",
+           }
+        ]
+    });
+})
+
     test("Verify POST /musicians returns error object with bad request - no name field", async () => {
 
         const badRequestNoName = {
@@ -160,6 +182,43 @@ describe('./musicians endpoint', () => {
         expect(res.statusCode).toBe(400);
         expect(res.body).toMatchObject({"error": [
             {
+                location: "body",
+                msg: "Invalid value",
+                path: "name",
+                type: "field",
+         },
+         {
+            location: "body",
+            msg: "Invalid value",
+            path: "name",
+            type: "field",
+                value: "",
+          },
+        ]
+    });
+})
+
+    test("Verify PUT /musicians/:id", async () => {
+
+        const res = await request(app).put("/musicians/3");
+
+        expect(res.statusCode).toBe(200);
+        expect(res.body).toMatchObject(expectedMusician);
+    })
+
+    test("Verify PUT /musicians/:id invalid request - invalid length", async () => {
+        
+        const badRequestinvalidLengthName = {
+            instrument: "Guitar",
+            name: "longNameeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+
+        } 
+
+        const res = await request(app).put("/musicians/3").send(badRequestinvalidLengthName);
+
+        expect(res.statusCode).toBe(400);
+        expect(res.body).toMatchObject({"error": [
+            {
                location: "body",
                msg: "Invalid value",
                path: "name",
@@ -167,13 +226,6 @@ describe('./musicians endpoint', () => {
            }
         ]
     });
-})    
-    test("Verify PUT /musicians/:id", async () => {
-        
-        const res = await request(app).put("/musicians/3");
-
-        expect(res.statusCode).toBe(200);
-        expect(res.body).toMatchObject(expectedMusician);
     })
 
     test("Verify Delete /musicians/:id", async () => {

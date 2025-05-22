@@ -4,6 +4,17 @@ const { check, validationResult  } = require("express-validator");
 
 const router = express.Router();
 
+const validationCheck = [
+    check("name").not().isEmpty().trim(),
+    check("instrument").not().isEmpty().trim(),
+    check("name").isLength({min: 2, max: 20}),
+    check("instrument").isLength({min: 2, max: 20}),
+
+]
+
+router.post("/", validationCheck)
+router.put("/:id", validationCheck)
+
 router.get("/", async (req, res, next) => {
     try {
         const musicians = await Musician.findAll();
@@ -34,17 +45,13 @@ router.get("/:id", async (req, res, next) => {
     }
 })
 
-router.post("/", [
-    check("name").not().isEmpty().trim(),
-    check("instrument").not().isEmpty().trim(),
-
-], async (req, res, next) => {
+router.post("/", async (req, res, next) => {
     try {
 
         const errors = validationResult(req);
 
         if (!errors.isEmpty()) {
-            res.status(400).json({ error: errors.array()});
+            res.status(400).json({error: errors.array()});
         }
 
         const musician = await Musician.create(req.body);
@@ -62,10 +69,19 @@ router.post("/", [
 
 router.put("/:id", async (req, res, next) => {
     try {
+
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            res.status(400).json({error: errors.array()});
+        }
+
         const foundMusician = await Musician.findByPk(req.params.id);
 
         if (foundMusician) {
             const updatedMusician = await foundMusician.update(req.body);
+            console.log(foundMusician)
+            console.log(updatedMusician)
             res.status(200).json(updatedMusician);
         } else {
             res.status(400).send(`Could not update musician.`);
