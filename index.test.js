@@ -78,14 +78,19 @@ jest.mock("./models/Musician", () => {
         setBand: jest.fn().mockImplementation(function(bandInstance) {
             this.bandId = bandInstance.id;
             return Promise.resolve(this);
-        })
+        }),
+        update: jest.fn(),
+
     }
     return { 
+        update: jest.fn(),
+        put: jest.fn(),
         belongsTo: jest.fn().mockResolvedValue(true),
         create: jest.fn().mockResolvedValue(mockMusician),
         findByPk: jest.fn().mockResolvedValue({...mockMusician, 
             destroy: jest.fn().mockResolvedValue(mockMusician),
-            update: jest.fn().mockResolvedValue(mockMusician),
+            update: jest.fn(),
+
         }),
         findAll: jest.fn().mockResolvedValue(
             [
@@ -200,10 +205,25 @@ describe('./musicians endpoint', () => {
 
     test("Verify PUT /musicians/:id", async () => {
 
-        const res = await request(app).put("/musicians/3");
+        const mockInstance = await Musician.findByPk();
+        console.log(mockInstance);
+        mockInstance.update.mockResolvedValue(expectedMusician);
 
+
+        
+        const res = await request(app).put("/musicians/3").send({name: "PPBand", instrument: "Guitar"});
         expect(res.statusCode).toBe(200);
         expect(res.body).toMatchObject(expectedMusician);
+    })
+
+    test("Verify PUT /musicians/:id handles error correctly", async () => {
+
+        const mockInstance = await Musician.findByPk();
+        mockInstance.update.mockRejectedValue(new Error("Update Failed"));
+
+        const res = await request(app).put("/musicians/3").send({name: "PPBand", instrument: "Guitar"});
+        
+        expect(res.statusCode).toBe(500);
     })
 
     test("Verify PUT /musicians/:id invalid request - invalid length", async () => {
@@ -229,6 +249,10 @@ describe('./musicians endpoint', () => {
     })
 
     test("Verify Delete /musicians/:id", async () => {
+
+        const mockInstance = await Musician.findByPk();
+        console.log(mockInstance);
+        mockInstance.destroy.mockResolvedValue(expectedMusician);
  
         const res = await request(app).delete("/musicians/1");
 

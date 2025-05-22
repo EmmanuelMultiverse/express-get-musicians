@@ -80,8 +80,7 @@ router.put("/:id", async (req, res, next) => {
 
         if (foundMusician) {
             const updatedMusician = await foundMusician.update(req.body);
-            console.log(foundMusician)
-            console.log(updatedMusician)
+            
             res.status(200).json(updatedMusician);
         } else {
             res.status(400).send(`Could not update musician.`);
