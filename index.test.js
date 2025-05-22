@@ -5,6 +5,7 @@ const { Musician } = require('./models/index')
 const app = require('./src/app');
 const {seedMusician} = require("./seedData");
 const request = require("supertest");
+const { BelongsTo, HasMany } = require('sequelize');
 
 const expectedMusician = {
     id: 1,
@@ -32,6 +33,7 @@ jest.mock("./models/Band", () => {
         ])
     }
     return {
+        hasMany: jest.fn().mockResolvedValue(true),
         create: jest.fn().mockResolvedValue(mockedBandInstance),
         findAll: jest.fn().mockResolvedValue(
             [
@@ -79,6 +81,7 @@ jest.mock("./models/Musician", () => {
         })
     }
     return { 
+        belongsTo: jest.fn().mockResolvedValue(true),
         create: jest.fn().mockResolvedValue(mockMusician),
         findByPk: jest.fn().mockResolvedValue({...mockMusician, 
             destroy: jest.fn().mockResolvedValue(mockMusician),
@@ -134,12 +137,37 @@ describe('./musicians endpoint', () => {
     })
 
     test("Verify POST /musicians", async () => {
-        const res = await request(app).post("/musicians");
+        const goodRequest = {
+            name: "FR",
+            instrument: "Guitar",
 
+        }
+
+        const res = await request(app).post("/musicians").send(goodRequest);
         expect(res.statusCode).toBe(201);
         expect(res.body).toMatchObject(expectedMusician);
     })
 
+    test("Verify POST /musicians returns error object with bad request - no name field", async () => {
+
+        const badRequestNoName = {
+            instrument: "Guitar",
+
+        }
+
+        const res = await request(app).post("/musicians").send(badRequestNoName);
+
+        expect(res.statusCode).toBe(400);
+        expect(res.body).toMatchObject({"error": [
+            {
+               location: "body",
+               msg: "Invalid value",
+               path: "name",
+               type: "field",
+           }
+        ]
+    });
+})    
     test("Verify PUT /musicians/:id", async () => {
         
         const res = await request(app).put("/musicians/3");
